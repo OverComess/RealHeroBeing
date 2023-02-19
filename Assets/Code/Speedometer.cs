@@ -10,9 +10,8 @@ public class Speedometer : MonoBehaviour
 
     [SerializeField]
     Text speedoMeter;
-    // Update is called once per frame
     void FixedUpdate()
     {
-        speedoMeter.text = "kmph: " + ((int)carController.move).ToString();
+        speedoMeter.text = "kmph: " + ((int)+carController.move).ToString();
     }
 }

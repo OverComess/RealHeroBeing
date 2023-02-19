@@ -1,7 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+
 using UnityEngine;
 
 public class CarController : MonoBehaviour
@@ -22,21 +19,21 @@ public class CarController : MonoBehaviour
     float inputHorizontal;
 
     public float move = 0;
-    float _break = 0;
     float rotation;
 
     float racingCoefficient;
+    float wheelAngle = 0;
 
     float rotationSpeed = 1;
 
-    private Rigidbody2D rb;
-
-    enum Rotate
-    { 
-        Left = -1,
-        Right = 1
+    private static class Coefficients
+    {
+        public const float Inertion = 0.5f;
+        public const float Reverse = 0.75f;
+        public const float Break = 2f;
     }
 
+    private Rigidbody2D rb;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -54,30 +51,48 @@ public class CarController : MonoBehaviour
         inputHorizontal = Input.GetAxis("Horizontal");
         
 
-        if (inputVertical > 0 && move < maxSpeed )
+        if (inputVertical > 0 && move < maxSpeed)
         {
             move += inputVertical * racingCoefficient * Time.deltaTime;
         }
 
-        else if (inputVertical == 0 && move > 0)
-        {
-            move -= racingCoefficient * Time.deltaTime * 0.5f;
-        }
-
-        if (move < 0)
-            move = 0;
-
         
+
         rotation = inputHorizontal * -rotationSpeed;
-        
     }
 
     void FixedUpdate()
     {
+        RotateWheels();
+
         transform.Translate(0f,move,0f);
-        if (move > 0)
+
+        if (move > 0 || move < 0)
         {
             transform.Rotate(0f, 0f, rotation);
         }
     }
+
+    void RotateWheels()
+    {
+        if (wheelAngle < 45 && inputHorizontal != 0)
+        {
+            wheels[leftWheel].transform.rotation = new Quaternion(0, 0, wheelAngle *
+                inputHorizontal * Time.deltaTime, 0);
+
+            wheels[rightWheel].transform.rotation = new Quaternion(0, 0, wheelAngle *
+                inputHorizontal * Time.deltaTime, 0);
+
+            wheelAngle++;
+        }
+        else if (inputHorizontal == 0)
+        {
+            wheelAngle = 0;
+            wheels[leftWheel].transform.rotation = new Quaternion(0, 0, wheelAngle, 0);
+            wheels[rightWheel].transform.rotation = new Quaternion(0, 0, wheelAngle, 0);
+        }
+    }
+
+    bool PositiveCheck(float srcNumber, float value, float coeff, bool isWithDelta) =>
+        isWithDelta ? srcNumber - value * Time.deltaTime * coeff > 0 : srcNumber - value * coeff > 0;
 }
