@@ -77,11 +77,9 @@ public class CarController : MonoBehaviour
     {
         if (wheelAngle < 45 && inputHorizontal != 0)
         {
-            wheels[leftWheel].transform.rotation = new Quaternion(0, 0, wheelAngle *
-                inputHorizontal * Time.deltaTime, 0);
+            wheels[leftWheel].transform.Rotate(0, 0, wheelAngle * -inputHorizontal * Time.deltaTime);
 
-            wheels[rightWheel].transform.rotation = new Quaternion(0, 0, wheelAngle *
-                inputHorizontal * Time.deltaTime, 0);
+            wheels[rightWheel].transform.Rotate(0, 0, wheelAngle * -inputHorizontal * Time.deltaTime);
 
             wheelAngle++;
         }
